@@ -85,6 +85,8 @@ function connect(peripheral) {
     return [x,y];
   }
 
+
+
   var processPoints = function(){
 
     points.read(function(error, data){
@@ -103,14 +105,18 @@ function connect(peripheral) {
         // console.log('[', xy[0].toString(),'],');
         // console.log('[', xy[1].toString(),']');
 
+
         chart = c3.generate({
                               data: {
                                   x: 'x',
                                   columns: [
-                                  xy[0],
-                                  xy[1]
+                                  xy[0].slice(0, 2),
+                                  xy[0].slice(0, 2)
                                   ],
                                   type: 'scatter'
+                              },
+                              transition: {
+                                  duration: 50
                               },
                               axis: {
                                 x: {
@@ -126,6 +132,31 @@ function connect(peripheral) {
                                 }
                               }
                             });
+
+
+        var position = 2; // greater than the label
+        function animate(){
+
+
+          // console.log('[', xy[0].slice(0, position).toString(),'],');
+          // console.log('[', xy[1].slice(0, position).toString(),']');
+
+          chart.load({
+              columns: [
+                xy[0].slice(0, position),
+                xy[1].slice(0, position)
+              ]
+          });
+
+          position = position + 1;
+          if(position>xy[0].length){
+            clearInterval(intervalID)
+          }
+        }
+
+        var intervalID = setInterval(animate, 50)
+
+
 
         // var result = regression('linear', pairs);
         // console.log("regression", result);
