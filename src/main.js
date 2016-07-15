@@ -3,7 +3,7 @@
 var noble = require('noble/with-bindings')(require('noble/lib/webbluetooth/bindings'));
 var eachSeries = require('async/eachSeries');
 // var regression = require('regression');
-var c3 = require('d3');
+var c3 = require('c3');
 
 var CONFIG_SERVICE_UUID = '1e374a10851e11e3b9e70002a5d5c51b';
 var CONFIG_CHARACTERISTIC_UUID   = '1e374a11851e11e3b9e70002a5d5c51b';
@@ -73,8 +73,8 @@ function connect(peripheral) {
   }
 
   var toXY = function(dataArray) {
-    var x = ["'x'"];
-    var y = ["'y'"];
+    var x = ["x"];
+    var y = ["y"];
     for (var i = 0; i < dataArray.length; i++) {
       if(i%2){
         y.push(dataArray[i]);
@@ -85,58 +85,64 @@ function connect(peripheral) {
     return [x,y];
   }
 
+  var processPoints = function(){
+
+    points.read(function(error, data){
+      console.log("read points", error, data)
+      if(data && Buffer.isBuffer(data)){
+        console.log("points", data.toString('hex'));
+
+        var dataArray = new Int8Array(data)
+        // console.log(dataArray)
+
+        // var pairs = toPairs(dataArray)
+        // console.log(pairs);
+
+        var xy = toXY(dataArray);
+        console.log(xy);
+        // console.log('[', xy[0].toString(),'],');
+        // console.log('[', xy[1].toString(),']');
+
+        chart = c3.generate({
+                              data: {
+                                  x: 'x',
+                                  columns: [
+                                  xy[0],
+                                  xy[1]
+                                  ],
+                                  type: 'scatter'
+                              },
+                              axis: {
+                                x: {
+                                    max: 50,
+                                    min: -50,
+                                    padding: {bottom: 0}
+
+                                },
+                                y: {
+                                    max: 50,
+                                    min: -50,
+                                    padding: {bottom: 0}
+                                }
+                              }
+                            });
+
+        // var result = regression('linear', pairs);
+        // console.log("regression", result);
+
+        //slope of a horizontal lines is 0
+        //slope of vertical approaches infinity
+        // vectorize it by looking where it starts and ends.. 
+        // feedback.write(new Buffer([0x05]), false);
+      }
+    });
+  }
+
   var ready = function(error){
-
-    // points.on('data', function(error, data){
-    //   console.log("read points", error)
-    //   if(data && data instanceof Buffer){
-    //     console.log("points", data.toString('hex'));
-
-    //     var dataArray = new Int8Array(data)
-    //     // console.log(dataArray)
-
-    //     // var pairs = toPairs(dataArray)
-    //     // console.log(pairs);
-
-    //     var xy = toXY(dataArray);
-    //     // console.log(xy);
-
-    //     chart = c3.generate({
-    //                           data: {
-    //                               x: 'x',
-    //                               columns: [
-    //                               xy[0],
-    //                               xy[1]
-    //                               ],
-    //                               type: 'scatter'
-    //                           },
-    //                           axis: {
-    //                             x: {
-    //                                 max: 50,
-    //                                 min: -50,
-    //                                 padding: {bottom: 0}
-
-    //                             },
-    //                             y: {
-    //                                 max: 50,
-    //                                 min: -50,
-    //                                 padding: {bottom: 0}
-    //                             }
-    //                           }
-    //                         });
-    //     // var result = regression('linear', pairs);
-    //     // console.log("regression", result);
-
-    //     //slope of a horizontal lines is 0
-    //     //slope of vertical approaches infinity
-    //     // vectorize it by looking where it starts and ends.. 
-    //     feedback.write(new Buffer([0x05]), false);
-    //   }
-    // });
 
     events.subscribe(function(error){
       console.log("subscribed?", error);
-      feedback.write(new Buffer([0x05]), false);
+      // feedback.write(new Buffer([0x05]), false);
         // homeMode(function(error){
         //   console.log("really ready?", error);
         // });
@@ -159,7 +165,7 @@ function connect(peripheral) {
         // 0x03 final release in home mode
         case 0x03:
           // this.emit('touchup');
-          // points.read();
+          processPoints();
           break;
 
         // 0x05 unsolicited heartbeat?? needs no response as far as I can tell
@@ -169,7 +175,7 @@ function connect(peripheral) {
 
         // 0x0D first touch while in home mode
         case 0x0d:
-          feedback.write(new Buffer([0x05]), false);
+          // feedback.write(new Buffer([0x05]), false);
           // this.emit('touchdown');
           break;
 
@@ -207,7 +213,7 @@ function connect(peripheral) {
   }
 
   var onDiscoverServices = function(error, services) {
-    console.log("found services?", error);
+    console.log("found services?", error, services);
     services.forEach(function(service){
       console.log(service.uuid);
     });
@@ -215,7 +221,7 @@ function connect(peripheral) {
   };
 
   peripheral.on('disconnect', function() {
-    process.exit(0);
+    console.log("disconnected")
   });
 
   var onConnect = function(error) {
@@ -229,6 +235,6 @@ function connect(peripheral) {
 
 document.getElementById("scanBtn").addEventListener("click", function( event ) {
   try{
-    noble.startScanning([RING_SERVICE_UUID]);
+    noble.startScanning([RING_SERVICE_UUID, MOTION_SERVICE_UUID, CONFIG_SERVICE_UUID]);
   }catch(error){ displayError(error); }
 }, false);
