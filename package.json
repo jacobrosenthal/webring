@@ -1,0 +1,31 @@
+{
+  "name": "webring",
+  "version": "0.0.1",
+  "description": "Nobleweb app",
+  "scripts": {
+    "build": "webpack",
+    "start": "ecstatic --port 3000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/monteslu/nobleweb.git"
+  },
+  "keywords": [
+    "ble",
+    "webbluetooth",
+    "bluetooth"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/monteslu/nobleweb/issues"
+  },
+  "homepage": "https://nobleweb.surge.sh",
+  "dependencies": {
+    "c3": "^0.4.11"
+  },
+  "devDependencies": {
+    "noble": "github:monteslu/noble",
+    "webpack": "^1.12.11",
+    "json-loader": "^0.5.4"
+  }
+}
