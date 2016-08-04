@@ -1,11 +1,9 @@
-NobleWeb 
+Ringzero in a webpage
 ========
 
-Simple app using noble with webpack to read a heart rate monitor.  You can use the [BLE Peripheral Simulator](https://play.google.com/store/apps/details?id=io.github.webbluetoothcg.bletestperipheral&hl=en) to transmit heart rate data:  
+Plots ringzero point cloud data in the browser.
 
-This app is up and running at: [https://webring.surge.sh](https://webring.surge.sh)
-
-Or you can run it locally: 
+![Example Plot Gif](https://github.com/jacobrosenthal/webring/raw/master/example.gif)
 
 ## Build it
 
