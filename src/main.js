@@ -115,14 +115,14 @@ function connect(peripheral) {
                               },
                               axis: {
                                 x: {
-                                    max: 50,
-                                    min: -50,
+                                    max: 100,
+                                    min: -100,
                                     padding: {bottom: 0}
 
                                 },
                                 y: {
-                                    max: 50,
-                                    min: -50,
+                                    max: 100,
+                                    min: -100,
                                     padding: {bottom: 0}
                                 }
                               }
