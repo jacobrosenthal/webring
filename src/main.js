@@ -68,8 +68,8 @@ function connect(peripheral) {
   }
 
   var toXY = function(dataArray) {
-    var x = ["x"];
-    var y = ["y"];
+    var x = [];
+    var y = [];
     for (var i = 0; i < dataArray.length; i++) {
       if(i%2){
         y.push(dataArray[i]);
@@ -79,7 +79,6 @@ function connect(peripheral) {
     };
     return [x,y];
   }
-
 
 
   var processPoints = function(){
@@ -97,6 +96,15 @@ function connect(peripheral) {
 
         var xy = toXY(dataArray);
         console.log(xy);
+
+        var xmax = Math.max(...xy[0]);
+        var xmin = Math.min(...xy[0]);
+        var ymax = Math.max(...xy[1]);
+        var ymin = Math.min(...xy[1]);
+
+        xy[0].unshift('x');
+        xy[1].unshift('y');
+
         // console.log('[', xy[0].toString(),'],');
         // console.log('[', xy[1].toString(),']');
 
@@ -113,17 +121,27 @@ function connect(peripheral) {
                               transition: {
                                   duration: 50
                               },
+                              legend : {
+                                show: false
+                              },
                               axis: {
                                 x: {
-                                    max: 100,
-                                    min: -100,
-                                    padding: {bottom: 0}
-
+                                    padding: {
+                                      left: 50,
+                                      right: 50,
+                                    },
+                                    show: false,
+                                    max: xmax,
+                                    min: xmin
                                 },
                                 y: {
-                                    max: 100,
-                                    min: -100,
-                                    padding: {bottom: 0}
+                                    padding: {
+                                      top: 50,
+                                      bottom: 50,
+                                    },
+                                    show: false,
+                                    max: ymax,
+                                    min: ymin
                                 }
                               }
                             });
@@ -149,7 +167,7 @@ function connect(peripheral) {
           }
         }
 
-        var intervalID = setInterval(animate, 50)
+        var intervalID = setInterval(animate, 100)
 
 
 
