@@ -54,11 +54,6 @@ function connect(peripheral) {
     mode.write(new Buffer([0x01]), false, done);
   }
 
-
-
-
-
-
   var toPairs = function(dataArray) {
     var pairs = [];
     for (var i = 0; i < dataArray.length; i+=2) {
@@ -173,7 +168,7 @@ function connect(peripheral) {
 
     events.subscribe(function(error){
       console.log("subscribed?", error);
-      // feedback.write(new Buffer([0x05]), false);
+      feedback.write(new Buffer([0x05]), false);
         // homeMode(function(error){
         //   console.log("really ready?", error);
         // });
